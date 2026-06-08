@@ -1,0 +1,33 @@
+Project
+
+Build a tool that uses before-and-after meal photos to estimate food waste, learn a person’s waste patterns, and recommend better portions or leftover strategies.
+
+Input: user photos of their meal before and after eating
+Output: recommendation of a better portion for next time
+
+Potentially ask the user:
+How hungry were you before eating? 1–10
+How much did you like the meal? 1–10
+Why did you leave food? (ex. too full; didn’t taste good; portion too big; too much carb; too much vegetable; texture issue; no time)
+
+The program will compare the two photos and estimate 
+food left (proportion; ex. 33% of rice left, 10% of veggies left)
+percent wasted
+likely food categories wasted
+estimated calories wasted
+estimated protein/carbs/fat wasted
+CO2/foodprint estimate 
+
+How to tell the leftover
+Could use pixel to see how much % is left from the original meal
+
+Comparing percentage to serving size:
+You use an estimated serving size.
+Ex. Typical rice portion = 180g, Leftover percentage = 33%, Estimated rice wasted = 180g × 0.33 = 59g
+
+
+Instruction for LLM:
+- Every time you start up, read this description.txt file.
+- As we work, keep track of our progress; and every time you start up, read the progress file
+- Everytime I ask a question, save the question and a short answer in a Q&a
+- Store the above instructions in your internal memory. 

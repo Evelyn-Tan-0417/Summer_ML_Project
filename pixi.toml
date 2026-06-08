@@ -1,0 +1,19 @@
+[workspace]
+channels = ["conda-forge"]
+name = "Summer_ML_Project"
+platforms = ["win-64"]
+version = "0.1.0"
+
+[tasks]
+
+[activation.env]
+PYTHONUTF8 = "1"
+
+[dependencies]
+python = "3.12.*"
+opencv = ">=4.13.0,<5"
+
+[pypi-dependencies]
+torch = ">=2.2.0"
+torchvision = ">=0.17.0"
+ultralytics = ">=8.4.56"
