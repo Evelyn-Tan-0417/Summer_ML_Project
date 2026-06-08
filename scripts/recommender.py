@@ -149,6 +149,7 @@ if __name__ == "__main__":
     print(f"Context Tip: {strat['contextual_tip']}")
     
     # Clean up
+    print("clean up")
     import os
     if os.path.exists("results/temp_recommender_test.db"):
         os.remove("results/temp_recommender_test.db")
