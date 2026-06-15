@@ -45,15 +45,26 @@ class MealDatabase:
                     fat_wasted_g REAL NOT NULL,
                     co2_wasted_kg REAL NOT NULL,
                     hunger_before INTEGER,        -- Survey: 1-10
+                    fullness_after INTEGER,       -- Survey: 1-10 (How full were you after eating)
                     taste_enjoyment INTEGER,      -- Survey: 1-10
                     reason_leftover TEXT          -- Survey: ex. too full, too much carbs, etc.
                 )
             """)
+            
+            # Migration to add fullness_after to existing DB tables if not present
+            try:
+                cursor.execute("PRAGMA table_info(meal_logs)")
+                columns = [row[1] for row in cursor.fetchall()]
+                if "fullness_after" not in columns:
+                    cursor.execute("ALTER TABLE meal_logs ADD COLUMN fullness_after INTEGER")
+            except Exception as e:
+                print(f"[Warning] DB Migration failed: {e}")
+                
             conn.commit()
 
     def log_meal(self, food_category, before_photo, after_photo, leftover_pct, 
                  wasted_weight, calories, protein, carbs, fat, co2, 
-                 hunger_before=None, taste_enjoyment=None, reason_leftover=None):
+                 hunger_before=None, fullness_after=None, taste_enjoyment=None, reason_leftover=None):
         """Logs a completed meal waste entry into the database."""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
@@ -64,13 +75,13 @@ class MealDatabase:
                     timestamp, food_category, before_photo_path, after_photo_path,
                     leftover_percentage, wasted_weight_grams, calories_wasted,
                     protein_wasted_g, carbs_wasted_g, fat_wasted_g, co2_wasted_kg,
-                    hunger_before, taste_enjoyment, reason_leftover
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    hunger_before, fullness_after, taste_enjoyment, reason_leftover
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 timestamp, food_category.lower(), before_photo, after_photo,
                 leftover_pct, wasted_weight, calories,
                 protein, carbs, fat, co2,
-                hunger_before, taste_enjoyment, reason_leftover
+                hunger_before, fullness_after, taste_enjoyment, reason_leftover
             ))
             conn.commit()
             return cursor.lastrowid
@@ -140,7 +151,7 @@ class MealDatabase:
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT leftover_percentage, hunger_before, taste_enjoyment
+                SELECT leftover_percentage, hunger_before, fullness_after, taste_enjoyment
                 FROM meal_logs
                 WHERE food_category = ?
                 ORDER BY timestamp DESC

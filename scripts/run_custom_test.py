@@ -29,8 +29,21 @@ def main():
     )
     args = parser.parse_args()
 
-    before_path = args.before
-    after_path = args.after
+    def resolve_path(path):
+        if not path or os.path.exists(path):
+            return path
+        if path.lower().endswith('.jpg'):
+            alt = path[:-4] + '.jpeg'
+            if os.path.exists(alt):
+                return alt
+        elif path.lower().endswith('.jpeg'):
+            alt = path[:-5] + '.jpg'
+            if os.path.exists(alt):
+                return alt
+        return path
+
+    before_path = resolve_path(args.before)
+    after_path = resolve_path(args.after)
 
     # Validation
     if not os.path.exists(before_path):

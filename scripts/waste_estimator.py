@@ -20,15 +20,15 @@ from ultralytics import YOLO
 # ==============================================================================
 # Profiles contain: (Typical Serving Size in grams, Calories per 100g, Protein g/100g, Carbs g/100g, Fat g/100g, CO2e kg/kg)
 NUTRITION_DATABASE = {
-    # Grains & Carbs
+    # --------------------------------------------------------------------------
+    # 1. CORE CATEGORIES (Standard)
+    # --------------------------------------------------------------------------
     "rice": (180, 130, 2.7, 28.0, 0.3, 1.5),
     "noodles": (200, 138, 4.5, 25.0, 2.1, 1.6),
     "pasta": (200, 158, 5.8, 30.9, 0.9, 1.8),
     "bread": (50, 265, 9.0, 49.0, 3.2, 1.2),
     "potato": (150, 87, 2.0, 20.0, 0.1, 0.5),
     "sweet potato": (150, 86, 1.6, 20.0, 0.1, 0.6),
-    
-    # Proteins / Meats
     "beef": (150, 250, 26.0, 0.0, 15.0, 27.0),
     "pork": (150, 242, 27.0, 0.0, 14.0, 12.1),
     "chicken": (150, 165, 31.0, 0.0, 3.6, 6.9),
@@ -36,8 +36,6 @@ NUTRITION_DATABASE = {
     "egg": (100, 155, 13.0, 1.1, 11.0, 4.8),
     "tofu": (100, 76, 8.0, 1.9, 4.8, 1.0),
     "shrimp": (120, 99, 24.0, 0.2, 0.3, 12.0),
-    
-    # Vegetables & Salad
     "broccoli": (100, 34, 2.8, 7.0, 0.4, 0.4),
     "carrot": (100, 41, 0.9, 10.0, 0.2, 0.4),
     "tomato": (100, 18, 0.9, 3.9, 0.2, 0.8),
@@ -47,21 +45,135 @@ NUTRITION_DATABASE = {
     "lettuce": (100, 15, 1.4, 2.9, 0.2, 0.4),
     "asparagus": (100, 20, 2.2, 3.9, 0.1, 0.9),
     "green beans": (100, 31, 1.8, 7.0, 0.2, 0.5),
-    
-    # Fruits
     "apple": (150, 52, 0.3, 14.0, 0.2, 0.4),
     "banana": (120, 89, 1.1, 23.0, 0.3, 0.8),
     "avocado": (100, 160, 2.0, 8.5, 14.7, 2.5),
     "orange": (130, 47, 0.9, 12.0, 0.1, 0.5),
-    
-    # Dairy & Fats
     "cheese": (30, 402, 25.0, 1.3, 33.0, 8.5),
     "butter": (10, 717, 0.9, 0.1, 81.0, 9.0),
-    
-    # Default fallback profiles for unknown foods
     "food": (150, 150, 5.0, 20.0, 5.0, 2.5),
-    "default": (150, 150, 5.0, 20.0, 5.0, 2.5)
+    "default": (150, 150, 5.0, 20.0, 5.0, 2.5),
+
+    # --------------------------------------------------------------------------
+    # 2. FOODSEG103 SPECIFIC CATEGORIES (Stripped/Cleaned Keys)
+    # --------------------------------------------------------------------------
+    "candy": (50, 380, 0.0, 98.0, 0.0, 1.2),
+    "egg tart": (70, 375, 5.0, 40.0, 22.0, 2.0),
+    "french fries": (100, 312, 3.4, 41.0, 15.0, 1.5),
+    "chocolate": (50, 546, 4.9, 61.0, 31.0, 2.5),
+    "biscuit": (50, 353, 7.0, 72.0, 4.0, 1.2),
+    "popcorn": (50, 375, 12.0, 74.0, 4.3, 1.0),
+    "pudding": (100, 121, 3.0, 23.0, 2.0, 1.5),
+    "ice cream": (100, 207, 3.5, 24.0, 11.0, 2.2),
+    "cheese butter": (30, 450, 20.0, 1.3, 40.0, 8.5),
+    "cake": (80, 290, 3.0, 50.0, 10.0, 1.8),
+    "wine": (150, 85, 0.1, 2.6, 0.0, 1.4),
+    "milkshake": (250, 112, 3.0, 18.0, 3.0, 2.0),
+    "coffee": (200, 2, 0.1, 0.0, 0.0, 0.5),
+    "juice": (200, 45, 0.4, 10.4, 0.1, 0.8),
+    "milk": (200, 61, 3.2, 4.8, 3.3, 1.9),
+    "tea": (200, 1, 0.0, 0.2, 0.0, 0.3),
+    "almond": (30, 579, 21.0, 22.0, 49.0, 1.0),
+    "red beans": (100, 337, 22.0, 63.0, 1.1, 1.2),
+    "cashew": (30, 553, 18.0, 30.0, 44.0, 1.0),
+    "dried cranberries": (40, 308, 0.1, 83.0, 1.4, 1.0),
+    "soy": (100, 147, 13.0, 11.0, 6.8, 0.9),
+    "walnut": (30, 654, 15.0, 14.0, 65.0, 1.0),
+    "peanut": (30, 567, 26.0, 16.0, 49.0, 0.9),
+    "date": (50, 277, 1.8, 75.0, 0.2, 0.8),
+    "apricot": (100, 48, 1.4, 11.0, 0.3, 0.5),
+    "strawberry": (100, 32, 0.7, 7.7, 0.3, 0.5),
+    "cherry": (100, 50, 1.0, 12.0, 0.3, 0.6),
+    "blueberry": (100, 57, 0.7, 14.0, 0.3, 0.5),
+    "raspberry": (100, 52, 1.2, 12.0, 0.7, 0.5),
+    "mango": (150, 60, 0.8, 15.0, 0.4, 0.8),
+    "olives": (50, 115, 0.8, 6.3, 10.7, 1.2),
+    "peach": (150, 39, 0.9, 10.0, 0.3, 0.6),
+    "lemon": (50, 29, 1.1, 9.3, 0.3, 0.5),
+    "pear": (150, 57, 0.4, 15.0, 0.1, 0.5),
+    "fig": (100, 74, 0.8, 19.0, 0.3, 0.8),
+    "pineapple": (150, 50, 0.5, 13.0, 0.1, 0.7),
+    "grape": (100, 69, 0.7, 18.0, 0.2, 0.6),
+    "kiwi": (100, 61, 1.1, 15.0, 0.5, 0.7),
+    "melon": (150, 34, 0.8, 8.2, 0.2, 0.6),
+    "watermelon": (200, 30, 0.6, 8.0, 0.2, 0.5),
+    "chicken duck": (150, 170, 28.0, 0.0, 5.0, 6.9),
+    "sausage": (100, 300, 12.0, 2.0, 27.0, 9.0),
+    "fried meat": (150, 320, 22.0, 5.0, 24.0, 14.0),
+    "lamb": (150, 294, 25.0, 0.0, 21.0, 24.0),
+    "sauce": (50, 120, 1.0, 15.0, 6.0, 1.0),
+    "crab": (150, 97, 19.0, 0.0, 1.5, 5.4),
+    "shellfish": (100, 86, 12.0, 3.0, 2.0, 6.0),
+    "soup": (250, 40, 1.5, 5.0, 1.5, 1.2),
+    "corn": (100, 86, 3.2, 19.0, 1.2, 0.8),
+    "hamburg": (200, 295, 17.0, 30.0, 12.0, 15.0),
+    "pizza": (150, 266, 11.0, 33.0, 10.0, 4.0),
+    "hanamaki baozi": (100, 220, 6.0, 45.0, 2.0, 1.5),
+    "wonton dumplings": (150, 240, 9.0, 35.0, 6.0, 2.5),
+    "pie": (120, 290, 3.5, 42.0, 12.0, 2.2),
+    "eggplant": (100, 25, 1.0, 6.0, 0.2, 0.4),
+    "garlic": (10, 149, 6.4, 33.0, 0.5, 0.4),
+    "cauliflower": (100, 25, 1.9, 5.0, 0.3, 0.4),
+    "kelp": (100, 43, 1.7, 10.0, 0.6, 0.5),
+    "seaweed": (100, 45, 1.7, 10.0, 0.6, 0.5),
+    "spring onion": (20, 32, 1.8, 7.3, 0.2, 0.4),
+    "rape": (100, 22, 1.5, 4.0, 0.2, 0.4),
+    "ginger": (10, 80, 1.8, 18.0, 0.8, 0.4),
+    "okra": (100, 33, 1.9, 7.5, 0.2, 0.4),
+    "pumpkin": (100, 26, 1.0, 6.5, 0.1, 0.5),
+    "cucumber": (100, 15, 0.7, 3.6, 0.1, 0.4),
+    "white radish": (100, 16, 0.7, 4.1, 0.1, 0.4),
+    "bamboo shoots": (100, 27, 2.6, 5.2, 0.3, 0.5),
+    "celery stick": (100, 16, 0.7, 3.0, 0.2, 0.4),
+    "cilantro mint": (20, 23, 2.1, 3.7, 0.6, 0.4),
+    "snow peas": (100, 42, 2.8, 7.5, 0.2, 0.5),
+    "bean sprouts": (100, 30, 3.0, 6.0, 0.2, 0.4),
+    "pepper": (50, 20, 0.9, 4.7, 0.2, 0.5),
+    "French beans": (100, 31, 1.8, 7.0, 0.2, 0.5),
+    "king oyster mushroom": (100, 35, 3.0, 7.0, 0.3, 0.5),
+    "shiitake": (100, 34, 2.2, 6.8, 0.5, 0.5),
+    "enoki mushroom": (100, 37, 2.7, 7.8, 0.3, 0.5),
+    "oyster mushroom": (100, 33, 3.3, 6.0, 0.4, 0.5),
+    "white button mushroom": (100, 22, 3.1, 3.3, 0.3, 0.5),
+    "salad": (150, 50, 2.0, 5.0, 3.0, 0.6),
+    "other ingredients": (150, 150, 5.0, 20.0, 5.0, 2.5)
 }
+
+def draw_label(img, text, pos, bg_color):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    scale = 0.45
+    thickness = 1
+    text_size, baseline = cv2.getTextSize(text, font, scale, thickness)
+    text_w, text_h = text_size
+    cx, cy = int(pos[0]), int(pos[1])
+    
+    # Compute text position to center it around (cx, cy)
+    tx = cx - text_w // 2
+    ty = cy + text_h // 2
+    
+    # Clamp text position to keep the box inside the image boundaries
+    padding = 4
+    tx = max(padding, min(img.shape[1] - text_w - padding, tx))
+    ty = max(text_h + padding, min(img.shape[0] - baseline - padding, ty))
+    
+    x1 = tx - padding
+    y1 = ty - text_h - padding
+    x2 = tx + text_w + padding
+    y2 = ty + baseline + padding
+    
+    # Draw filled background rectangle
+    cv2.rectangle(img, (x1, y1), (x2, y2), bg_color, -1)
+    
+    # Draw a thin border
+    border_color = tuple(max(0, int(c * 0.7)) for c in bg_color)
+    cv2.rectangle(img, (x1, y1), (x2, y2), border_color, 1)
+    
+    # Determine text color based on background luminance
+    b, g, r = bg_color
+    lum = 0.299 * r + 0.587 * g + 0.114 * b
+    text_color = (0, 0, 0) if lum > 150 else (255, 255, 255)
+    
+    cv2.putText(img, text, (tx, ty), font, scale, text_color, thickness, cv2.LINE_AA)
 
 class FoodWasteEstimator:
     def __init__(self):
@@ -69,8 +181,23 @@ class FoodWasteEstimator:
         print("[System] Initializing Food Waste Estimator Models...")
         # yolov8n-seg is used to segment COCO objects (plates, bowls, cups, etc.)
         self.plate_model = YOLO("yolov8n-seg.pt")
-        # arunapb/yolo11l-food-segmentation segments 103 detailed ingredients
-        self.food_model = YOLO("arunapb/yolo11l-food-segmentation")
+        
+        # Load the custom fine-tuned model from models/best.pt
+        model_path = os.path.join("models", "best.pt")
+        if os.path.exists(model_path):
+            print(f"[System] Loading fine-tuned food segmentation model from '{model_path}'...")
+            self.food_model = YOLO(model_path)
+        else:
+            # Fallback to the default single-class model
+            fallback_path = "yolo11l-food-segmentation.pt"
+            print(f"[System] Custom model '{model_path}' not found. Falling back to default '{fallback_path}'...")
+            if not os.path.exists(fallback_path):
+                print(f"[System] Downloading default food segmentation model weights from Hugging Face...")
+                url = "https://huggingface.co/arunapb/yolo11l-food-segmentation/resolve/main/best.pt"
+                import urllib.request
+                urllib.request.urlretrieve(url, fallback_path)
+                print(f"[System] Download complete: {fallback_path}")
+            self.food_model = YOLO(fallback_path)
         print("[System] Models initialized successfully!")
 
     def segment_image(self, img_path):
@@ -124,9 +251,9 @@ class FoodWasteEstimator:
         for result in food_results:
             if result.masks is not None:
                 for idx, mask in enumerate(result.masks.data):
-                    # Get class name
+                    # Get class name and clean it
                     class_id = int(result.boxes.cls[idx])
-                    class_name = result.names[class_id].lower()
+                    class_name = result.names[class_id].lower().strip()
                     
                     # Extract binary mask
                     bin_mask = mask.cpu().numpy()
@@ -138,18 +265,28 @@ class FoodWasteEstimator:
                     else:
                         food_masks[class_name] = bin_mask_resized
                         
-                    # Draw a distinct color overlay for each food item
-                    contours, _ = cv2.findContours(bin_mask_resized, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                     # Use a unique color based on class ID
                     np.random.seed(class_id)
                     color = tuple(int(c) for c in np.random.randint(50, 255, size=3))
+
+                    # Draw a distinct color overlay for each food item (semi-transparent filled mask)
+                    alpha = 0.35
+                    mask_indices = bin_mask_resized > 0
+                    annotated_img[mask_indices] = cv2.addWeighted(
+                        img[mask_indices], 1.0 - alpha,
+                        np.full_like(img[mask_indices], color), alpha,
+                        0
+                    )
+                    
+                    # Also draw the contour boundary (for a clean edge)
+                    contours, _ = cv2.findContours(bin_mask_resized, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                     cv2.drawContours(annotated_img, contours, -1, color, 2)
                     
-                    # Add label text on the bounding box center
+                    # Add premium label text badge at the center of the food
                     box = result.boxes.xyxy[idx].tolist()
                     cx = int((box[0] + box[2]) / 2)
                     cy = int((box[1] + box[3]) / 2)
-                    cv2.putText(annotated_img, class_name, (cx - 20, cy), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+                    draw_label(annotated_img, class_name, (cx, cy), color)
 
         # Convert masks to pixel area sizes
         food_areas = {name: float(np.sum(mask > 0)) for name, mask in food_masks.items()}
@@ -233,6 +370,7 @@ class FoodWasteEstimator:
             waste_report[food_name] = {
                 "leftover_percentage": leftover_pct,
                 "wasted_weight_grams": wasted_grams,
+                "baseline_weight_g": serving_size,
                 "calories_wasted": wasted_kcal,
                 "protein_wasted_g": wasted_protein,
                 "carbs_wasted_g": wasted_carbs,

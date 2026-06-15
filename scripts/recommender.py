@@ -62,36 +62,56 @@ class WasteRecommender:
         logs = db.get_category_trend(category, limit=5)
         
         if not logs:
-            return "This is your first time logging this food category. Eat mindfully and see how much you consume."
+            return f"This is your first time logging {category.upper()}. Eat mindfully and see how much you consume."
             
         leftovers = [log["leftover_percentage"] for log in logs]
         avg_leftover = sum(leftovers) / len(leftovers)
         
-        # Check if they are consistently finishing their food
-        if avg_leftover < 5.0:
-            return f"Excellent. You consistently finish your {category.upper()} (average leftovers: {avg_leftover:.1f}%). Your serving size is perfectly matched to your appetite."
-            
-        # If they consistently leave food
-        if avg_leftover >= 15.0:
+        # If they consistently leave food (leftovers >= 5%)
+        if avg_leftover >= 5.0:
             recommended_reduction = int(round(avg_leftover))
             # Caps recommended reduction to 50% max to stay realistic
             recommended_reduction = min(50, recommended_reduction)
             
             advice = (
-                f"Pattern Detected: You consistently leave behind an average of {avg_leftover:.1f}% of your {category.upper()} serving.\n"
+                f"Pattern Detected: You leave behind an average of {avg_leftover:.1f}% of your {category.upper()} serving.\n"
                 f"👉 RECOMMENDATION: Next time, reduce your starting serving size of {category.upper()} by {recommended_reduction}% "
                 f"(e.g., if you usually serve 180g, try starting with {int(180 * (1 - recommended_reduction/100))}g). "
                 f"You can always get a small second helping if you are still hungry."
             )
             
             # Contextual advice based on hunger
-            avg_hunger = sum([log["hunger_before"] for log in logs if log["hunger_before"] is not None]) / max(1, len([l for l in logs if l["hunger_before"] is not None]))
-            if avg_hunger <= 4.0:
-                advice += "\n💡 TIP: Your logs indicate you serve this food when your hunger level is quite low (avg: {:.1f}/10). Adjust your portions down even further on low-hunger days.".format(avg_hunger)
-                
+            valid_hungers = [log["hunger_before"] for log in logs if log["hunger_before"] is not None]
+            if valid_hungers:
+                avg_hunger = sum(valid_hungers) / len(valid_hungers)
+                if avg_hunger <= 4.0:
+                    advice += f"\n💡 TIP: Your logs show you serve this when your initial hunger is low (avg: {avg_hunger:.1f}/10). Reduce it even more on low-hunger days."
+                    
             return advice
             
-        return f"Serving size is mostly stable. You leave about {avg_leftover:.1f}% of your {category.upper()} on average. Keep monitoring."
+        # If they consistently finish their food (leftovers < 5%)
+        else:
+            valid_fullness = [log["fullness_after"] for log in logs if log["fullness_after"] is not None]
+            
+            if valid_fullness:
+                avg_fullness = sum(valid_fullness) / len(valid_fullness)
+                
+                # If they finish food but are still hungry (fullness < 8 out of 10)
+                if avg_fullness < 8.0:
+                    # Recommend increase based on how far they are from being satisfied (10/10 full)
+                    # e.g., 6/10 fullness -> 40% increase recommended
+                    recommended_increase = int((10 - avg_fullness) * 10)
+                    recommended_increase = min(60, recommended_increase) # Cap increase at 60% max
+                    
+                    return (
+                        f"Pattern Detected: You consistently finish your {category.upper()}, but you average only {avg_fullness:.1f}/10 fullness afterwards.\n"
+                        f"👉 RECOMMENDATION: Next time, try increasing your starting serving size of {category.upper()} by {recommended_increase}% "
+                        f"(e.g., if you usually serve 180g, try starting with {int(180 * (1 + recommended_increase/100))}g) to reach full satisfaction."
+                    )
+                else:
+                    return f"Excellent. You consistently finish your {category.upper()} and feel fully satisfied (average fullness: {avg_fullness:.1f}/10). Your serving size is perfectly matched!"
+            
+            return f"Excellent. You consistently finish your {category.upper()} (average leftovers: {avg_leftover:.1f}%). Your serving size seems well matched to your appetite."
 
     def get_leftover_strategy(self, category, reason_leftover):
         """
