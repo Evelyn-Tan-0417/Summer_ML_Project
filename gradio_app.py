@@ -30,26 +30,35 @@ from ui import (
 )
 
 # Construct UI using gr.Blocks and modular widgets
-with gr.Blocks(title="Smart Food Waste Estimator") as demo:
+with gr.Blocks(
+    title="Smart Food Waste Estimator",
+    theme=gr.themes.Soft(primary_hue="purple", neutral_hue="slate")
+) as demo:
     # 1. Header widget
     render_header()
     
-    with gr.Row():
-        # 2. Left Panel: Inputs & Surveys
-        with gr.Column(scale=1):
-            # Modular image uploads
-            before_input, after_input = render_image_upload()
+    # 2. Top Section: User Inputs (Images on the left, Survey on the right)
+    with gr.Group():
+        with gr.Row():
+            with gr.Column(scale=1):
+                # Modular image uploads
+                before_input, after_input = render_image_upload()
+                
+            with gr.Column(scale=1):
+                # Modular survey inputs
+                hunger_before, fullness_after, taste_enjoyment, reason_leftover = render_survey()
+        
+        # Action trigger button below the inputs
+        with gr.Row():
+            with gr.Column(scale=1):
+                run_btn = render_action_button()
+                
+    gr.HTML("<hr style='border:0; border-top:1px solid var(--block-border-color, #ddd6fe); margin: 32px 0;'/>")
             
-            # Modular survey inputs
-            hunger_before, fullness_after, taste_enjoyment, reason_leftover = render_survey()
-            
-            # Modular action trigger button
-            run_btn = render_action_button()
-            
-        # 3. Right Panel: Results & Analytics
-        with gr.Column(scale=2):
-            # Modular results and report dashboards
-            before_overlay, after_overlay, output_html = render_results_preview()
+    # 3. Bottom Section: Results & Analytics
+    with gr.Group():
+        # Modular results and report dashboards
+        before_overlay, after_overlay, output_html = render_results_preview()
             
     # Connect event triggers (bound to independent modules)
     run_btn.click(
