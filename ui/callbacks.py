@@ -149,13 +149,17 @@ def analyze_waste(before_img, after_img, hunger_before, fullness_after, taste_en
         c_pct = (carb / sum_macros * 100) if sum_macros > 0 else 0
         f_pct = (fat / sum_macros * 100) if sum_macros > 0 else 0
         
+        prot_kcal = prot * 4.0
+        carb_kcal = carb * 4.0
+        fat_kcal = fat * 9.0
+        
         macro_html = f"""
         <div style="background: #ffffff; padding: 22px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.01);">
             <h4 style="margin-top: 0; color: #2d3748; font-size: 16px; font-weight: 800; margin-bottom: 18px; border-bottom: 1px solid #edf2f7; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">📊 Macronutrients Lost Breakdown</h4>
             <div style="margin-bottom: 16px;">
                 <div style="display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 6px;">
                     <span style="font-weight: 700; color: #3182ce;">💪 Protein Wasted</span>
-                    <span style="font-weight: 800; color: #2d3748;">{prot:.1f} g</span>
+                    <span style="font-weight: 800; color: #2d3748;">{prot:.1f} g <span style="font-size: 11px; color: #718096; font-weight: normal; margin-left: 4px;">({prot_kcal:.1f} kcal)</span></span>
                 </div>
                 <div style="background: #edf2f7; height: 10px; border-radius: 5px; overflow: hidden;">
                     <div style="background: #3182ce; width: {p_pct}%; height: 100%; border-radius: 5px;"></div>
@@ -164,7 +168,7 @@ def analyze_waste(before_img, after_img, hunger_before, fullness_after, taste_en
             <div style="margin-bottom: 16px;">
                 <div style="display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 6px;">
                     <span style="font-weight: 700; color: #dd6b20;">🍞 Carbohydrates Wasted</span>
-                    <span style="font-weight: 800; color: #2d3748;">{carb:.1f} g</span>
+                    <span style="font-weight: 800; color: #2d3748;">{carb:.1f} g <span style="font-size: 11px; color: #718096; font-weight: normal; margin-left: 4px;">({carb_kcal:.1f} kcal)</span></span>
                 </div>
                 <div style="background: #edf2f7; height: 10px; border-radius: 5px; overflow: hidden;">
                     <div style="background: #dd6b20; width: {c_pct}%; height: 100%; border-radius: 5px;"></div>
@@ -173,7 +177,7 @@ def analyze_waste(before_img, after_img, hunger_before, fullness_after, taste_en
             <div>
                 <div style="display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 6px;">
                     <span style="font-weight: 700; color: #e53e3e;">🥑 Fats Wasted</span>
-                    <span style="font-weight: 800; color: #2d3748;">{fat:.1f} g</span>
+                    <span style="font-weight: 800; color: #2d3748;">{fat:.1f} g <span style="font-size: 11px; color: #718096; font-weight: normal; margin-left: 4px;">({fat_kcal:.1f} kcal)</span></span>
                 </div>
                 <div style="background: #edf2f7; height: 10px; border-radius: 5px; overflow: hidden;">
                     <div style="background: #e53e3e; width: {f_pct}%; height: 100%; border-radius: 5px;"></div>
