@@ -1,4 +1,5 @@
-
+#ignore the database
+results/food_waste.db
 
 # Ignore YOLO model files
 *.pt
